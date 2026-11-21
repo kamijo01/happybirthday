@@ -16,13 +16,13 @@ let arrowTrail = [];
 let isMuted = false;
 
 // Posisyon at anggulo ng pana (Bow)
-const bow = { x: 70, y: 160, angle: 0 };
+const bow = { x: 60, y: 120, angle: 0 };
 
 // Detalye at galaw ng palaso (Arrow)
-let arrow = { x: 70, y: 160, vx: 0, vy: 0, active: false };
+let arrow = { x: 60, y: 120, vx: 0, vy: 0, active: false };
 
 // Detalye at galaw ng gumagalaw na puso (Heart)
-let heart = { x: 260, y: 160, size: 28, speedY: 2.2 };
+let heart = { x: 220, y: 120, size: 22, speedY: 2 };
 
 
 // ==========================================
@@ -101,47 +101,44 @@ function resizeGame() {
     const isPhone = vp.width < 640;
     const isPortrait = vp.height > vp.width;
 
-    const sidePad = isPhone ? 24 : 32;
-    const topBottomPad = isPhone ? 76 : 40;
-
-    const availWidth = Math.max(220, vp.width - sidePad);
-    const availHeight = Math.max(180, vp.height - topBottomPad);
+    const availWidth = Math.max(200, vp.width - (isPhone ? 28 : 36));
+    const availHeight = Math.max(150, vp.height - (isPhone ? 90 : 44));
 
     let width;
     let height;
 
     if (isPhone && isPortrait) {
-        width = Math.min(availWidth, 420);
-        height = Math.min(availHeight, Math.max(190, Math.round(width * 0.72)));
+        width = Math.min(availWidth, 340);
+        height = Math.min(availHeight, Math.max(150, Math.round(width * 0.62)));
     } else if (isPhone) {
         width = Math.min(availWidth, Math.round(availHeight * 1.45));
-        height = Math.min(availHeight, Math.round(width * 0.65));
+        height = Math.min(availHeight, Math.round(width * 0.62));
     } else {
         width = Math.min(availWidth, Math.round(availHeight * 1.65));
         height = Math.min(availHeight, Math.round(width * 0.62));
     }
 
-    canvas.width = Math.max(220, width);
-    canvas.height = Math.max(180, height);
+    canvas.width = Math.max(200, width);
+    canvas.height = Math.max(150, height);
     canvas.style.width = `${canvas.width}px`;
     canvas.style.height = `${canvas.height}px`;
 
-    bow.x = Math.max(32, Math.round(canvas.width * 0.14));
+    bow.x = Math.max(26, Math.round(canvas.width * 0.14));
     bow.y = Math.round(canvas.height * 0.54);
 
-    heart.x = Math.min(canvas.width - 34, Math.round(canvas.width * 0.82));
-    const maxHeartSize = isPhone ? 26 : 60;
-    const minHeartSize = isPhone ? 16 : 32;
+    heart.x = Math.min(canvas.width - 28, Math.round(canvas.width * 0.82));
+    const maxHeartSize = isPhone ? 20 : 58;
+    const minHeartSize = isPhone ? 13 : 32;
     heart.size = Math.max(
         minHeartSize,
-        Math.min(maxHeartSize, Math.round(Math.min(canvas.width, canvas.height) * 0.095))
+        Math.min(maxHeartSize, Math.round(Math.min(canvas.width, canvas.height) * 0.085))
     );
 
     heart.y = Math.min(
-        Math.max(heart.y || canvas.height * 0.5, heart.size + 14),
-        canvas.height - heart.size - 18
+        Math.max(heart.y || canvas.height * 0.5, heart.size + 12),
+        canvas.height - heart.size - 14
     );
-    heart.speedY = Math.max(1.4, Math.min(3.8, canvas.height * 0.006));
+    heart.speedY = Math.max(1.2, Math.min(3.6, canvas.height * 0.0055));
 
     if (!arrow.active) {
         arrow.x = bow.x;
@@ -160,7 +157,7 @@ if (window.visualViewport) {
 // 4. PAG-ASINTA AT PAGPANA (POINTER INPUT)
 // ==========================================
 function getCanvasPoint(e) {
-    if (!canvas) return { x: bow.x + 80, y: bow.y };
+    if (!canvas) return { x: bow.x + 70, y: bow.y };
     const rect = canvas.getBoundingClientRect();
     const safeWidth = rect.width > 0 ? rect.width : canvas.width || 1;
     const safeHeight = rect.height > 0 ? rect.height : canvas.height || 1;
@@ -187,7 +184,7 @@ function shootArrow() {
     startBgMusic();
 
     const angle = Number.isFinite(bow.angle) ? bow.angle : 0;
-    const speed = Math.max(9, canvas.width * 0.02);
+    const speed = Math.max(8, canvas.width * 0.02);
 
     arrow.active = true;
     arrow.x = bow.x;
@@ -214,7 +211,7 @@ if (canvas) {
 // ==========================================
 function getVisualScale() {
     if (!canvas) return 1;
-    const minFloor = canvas.width < 460 ? 0.48 : 0.65;
+    const minFloor = canvas.width < 420 ? 0.38 : 0.65;
     return Math.max(minFloor, Math.min(1.08, canvas.width / 680));
 }
 
@@ -223,12 +220,12 @@ function drawAimGuide() {
 
     const s = getVisualScale();
     const angle = Number.isFinite(bow.angle) ? bow.angle : 0;
-    const guideLen = Math.min(120 * s, canvas.width * 0.24);
+    const guideLen = Math.min(110 * s, canvas.width * 0.24);
 
     ctx.save();
     ctx.setLineDash([5 * s, 7 * s]);
     ctx.strokeStyle = "rgba(255, 255, 255, 0.38)";
-    ctx.lineWidth = Math.max(1.3, 2 * s);
+    ctx.lineWidth = Math.max(1.2, 2 * s);
     ctx.beginPath();
     ctx.moveTo(bow.x, bow.y);
     ctx.lineTo(bow.x + Math.cos(angle) * guideLen, bow.y + Math.sin(angle) * guideLen);
@@ -243,7 +240,7 @@ function drawHeart(x, y, size) {
 
     ctx.save();
     ctx.shadowColor = "rgba(255, 77, 109, 0.55)";
-    ctx.shadowBlur = 14 * s;
+    ctx.shadowBlur = 12 * s;
 
     const grad = ctx.createLinearGradient(x, y - size * 0.4, x, y + size);
     grad.addColorStop(0, "#ff758f");
@@ -271,7 +268,7 @@ function drawArrowShape(lengthScale = 1, isFlying = false) {
     shaftGrad.addColorStop(1, "#ffd166");
 
     ctx.strokeStyle = shaftGrad;
-    ctx.lineWidth = Math.max(2, 3.5 * s);
+    ctx.lineWidth = Math.max(1.8, 3.5 * s);
     ctx.lineCap = "round";
     ctx.beginPath();
     ctx.moveTo(-24 * s, 0);
@@ -308,10 +305,10 @@ function drawBowAndArrow() {
     if (!ctx) return;
 
     const s = getVisualScale();
-    const bowSpan = (canvas && canvas.width < 460 ? 32 : 46) * s;
+    const bowSpan = (canvas && canvas.width < 420 ? 30 : 46) * s;
     const tipX = bowSpan * 0.24;
     const curveOutX = bowSpan * 0.68;
-    const stringPullX = (!arrow.active && !gameWon) ? -15 * s : -5 * s;
+    const stringPullX = (!arrow.active && !gameWon) ? -14 * s : -5 * s;
     const angle = Number.isFinite(bow.angle) ? bow.angle : 0;
 
     for (let i = 0; i < arrowTrail.length; i++) {
@@ -322,7 +319,7 @@ function drawBowAndArrow() {
         ctx.rotate(t.angle);
         ctx.fillStyle = `rgba(255, 209, 102, ${alpha})`;
         ctx.beginPath();
-        ctx.arc(0, 0, Math.max(1.8, 3.5 * s), 0, Math.PI * 2);
+        ctx.arc(0, 0, Math.max(1.6, 3.5 * s), 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     }
@@ -332,7 +329,7 @@ function drawBowAndArrow() {
     ctx.rotate(angle);
 
     ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
-    ctx.lineWidth = Math.max(1.1, 1.8 * s);
+    ctx.lineWidth = Math.max(1, 1.8 * s);
     ctx.beginPath();
     ctx.moveTo(tipX, -bowSpan);
     ctx.lineTo(stringPullX, 0);
@@ -346,9 +343,9 @@ function drawBowAndArrow() {
 
     ctx.save();
     ctx.shadowColor = "rgba(255, 209, 102, 0.35)";
-    ctx.shadowBlur = 7 * s;
+    ctx.shadowBlur = 6 * s;
     ctx.strokeStyle = bowGrad;
-    ctx.lineWidth = Math.max(3, 5.5 * s);
+    ctx.lineWidth = Math.max(2.6, 5.5 * s);
     ctx.lineCap = "round";
 
     ctx.beginPath();
@@ -363,16 +360,16 @@ function drawBowAndArrow() {
     ctx.restore();
 
     ctx.strokeStyle = "#e94560";
-    ctx.lineWidth = Math.max(4, 7 * s);
+    ctx.lineWidth = Math.max(3.4, 7 * s);
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(-2 * s, -7 * s);
-    ctx.lineTo(-2 * s, 7 * s);
+    ctx.moveTo(-2 * s, -6 * s);
+    ctx.lineTo(-2 * s, 6 * s);
     ctx.stroke();
 
     if (!arrow.active && !gameWon) {
         ctx.save();
-        ctx.translate(8 * s, 0);
+        ctx.translate(7 * s, 0);
         drawArrowShape(0.95, false);
         ctx.restore();
     }
@@ -383,7 +380,7 @@ function drawBowAndArrow() {
         const flightAngle = Math.atan2(arrow.vy, arrow.vx);
         ctx.save();
         ctx.shadowColor = "rgba(255, 209, 102, 0.65)";
-        ctx.shadowBlur = 9 * s;
+        ctx.shadowBlur = 8 * s;
         ctx.translate(arrow.x, arrow.y);
         ctx.rotate(Number.isFinite(flightAngle) ? flightAngle : 0);
         drawArrowShape(1.05, true);
@@ -396,13 +393,13 @@ function spawnConfetti(x, y) {
     const colors = ["#ff4d6d", "#ffd166", "#06d6a0", "#4cc9f0", "#ffffff"];
     for (let i = 0; i < 55; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = (1.5 + Math.random() * 5) * s;
+        const speed = (1.4 + Math.random() * 4.5) * s;
         particles.push({
             x: x,
             y: y,
             vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed - 1.8 * s,
-            size: (2.8 + Math.random() * 4) * s,
+            vy: Math.sin(angle) * speed - 1.6 * s,
+            size: (2.5 + Math.random() * 3.8) * s,
             color: colors[Math.floor(Math.random() * colors.length)],
             life: 65 + Math.floor(Math.random() * 30)
         });
@@ -439,7 +436,7 @@ function update() {
 
     if (!gameWon) {
         heart.y += heart.speedY;
-        if (heart.y > canvas.height - heart.size - 16 || heart.y < 18) {
+        if (heart.y > canvas.height - heart.size - 12 || heart.y < 14) {
             heart.speedY *= -1;
         }
 
@@ -456,6 +453,50 @@ function update() {
 
             arrow.x += arrow.vx;
             arrow.y += arrow.vy;
-            arrow.vy += 0.18;
+            arrow.vy += 0.16;
 
-            if (arrow.x > canvas.width
+            if (arrow.x > canvas.width || arrow.y > canvas.height || arrow.y < 0) {
+                arrow.active = false;
+                arrowTrail = [];
+            }
+
+            const dist = Math.hypot(arrow.x - heart.x, arrow.y - (heart.y + heart.size * 0.5));
+            if (dist < heart.size + 6) {
+                gameWon = true;
+                arrow.active = false;
+                arrowTrail = [];
+                playWinMusic();
+                spawnConfetti(heart.x, heart.y + heart.size * 0.5);
+                winTimer = setTimeout(() => {
+                    if (card) card.style.display = "block";
+                }, 450);
+            }
+        }
+
+        drawAimGuide();
+        drawHeart(heart.x, heart.y, heart.size);
+        drawBowAndArrow();
+    } else {
+        drawHeart(heart.x, heart.y, heart.size);
+        updateAndDrawParticles();
+    }
+
+    requestAnimationFrame(update);
+}
+
+if (replayBtn) {
+    replayBtn.addEventListener("click", () => {
+        clearTimeout(winTimer);
+        gameWon = false;
+        arrow.active = false;
+        arrow.x = bow.x;
+        arrow.y = bow.y;
+        arrowTrail = [];
+        particles = [];
+        heart.y = Math.round(canvas ? canvas.height * 0.5 : 120);
+        if (card) card.style.display = "none";
+        resetMusicForReplay();
+    });
+}
+
+update();
